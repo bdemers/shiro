@@ -126,21 +126,26 @@ public class Quickstart {
         // clear the ThreadContext so we can now test with an 'anonymous' user
         ThreadContext.unbindSubject();
 
-        // create an user that is not bound to a thread
-        Subject detachedAnonymousUser = new Subject.Builder()
-            .principals(new SimplePrincipalCollection( "anonymous", "n/a" ))
-            .authenticated( false )
-            .buildSubject();
+        currentUser = SecurityUtils.getSubject();
+        log.info( "User '{}' authentication status: {}", currentUser.getPrincipal(), currentUser.isAuthenticated() );
 
-        if (detachedAnonymousUser.isPermitted( "winnebago:drive:eagle5" )) {
+        if (currentUser.isPermitted( "winnebago:drive:eagle5" )) {
             log.info("You are permitted to 'drive' the winnebago with license plate (id) 'eagle5'.  " +
                          "The keys are under the seat - have fun!");
         } else {
             log.info("Sorry, anonymous users aren't allowed to drive the 'eagle5' winnebago!");
         }
 
+        // This example treats the user named 'anonymous' special,
+        // but the TextConfigurationRealm does not know about that
+        warnAllowsAnonymousUserLogin();
 
-        currentUser = SecurityUtils.getSubject();
+        System.exit(0);
+    }
+
+    private static void warnAllowsAnonymousUserLogin() {
+
+        Subject currentUser = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken("anonymous", "");
         token.setRememberMe(true);
         try {
@@ -152,7 +157,7 @@ public class Quickstart {
             log.info("Password for account " + token.getPrincipal() + " was incorrect!");
         } catch (LockedAccountException lae) {
             log.info("The account for username " + token.getPrincipal() + " is locked.  " +
-                         "Please contact your administrator to unlock it.");
+                         "Please contact your administrator to unlock it." );
         }
 
         // This is bad, in this example the 'anonymous' user comes from the shiro.ini which allows all users to login
@@ -160,7 +165,7 @@ public class Quickstart {
         if (currentUser.isAuthenticated()) {
             log.warn("Anonymous User [" + currentUser.getPrincipal() + "] was able to login with a password.");
         }
-
-        System.exit(0);
     }
+
+
 }
