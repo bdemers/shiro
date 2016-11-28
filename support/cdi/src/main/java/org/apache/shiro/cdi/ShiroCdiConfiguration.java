@@ -11,18 +11,13 @@ import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.event.EventBus;
 import org.apache.shiro.event.support.DefaultEventBus;
-import org.apache.shiro.mgt.AuthenticatingSecurityManager;
-import org.apache.shiro.mgt.AuthorizingSecurityManager;
-import org.apache.shiro.mgt.CachingSecurityManager;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.DefaultSubjectFactory;
-import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
-import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.mgt.SubjectDAO;
 import org.apache.shiro.mgt.SubjectFactory;
 import org.apache.shiro.realm.Realm;
@@ -40,53 +35,52 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
 public class ShiroCdiConfiguration {
 
-//    @Default
-//    @Produces
-//    @Typed({SecurityManager.class})
-//    @ApplicationScoped
-//    protected SecurityManager securityManager(@New DefaultSecurityManager securityManager,
-//                                                        Instance<Realm> realms,
-//                                                        EventBus eventBus,
-//                                                        SessionManager sessionManager,
-//                                                        Instance<CacheManager> cacheManager,
-//                                                        SubjectDAO subjectDAO,
-//                                                        SubjectFactory subjectFactory,
-//                                                        Instance<RememberMeManager> rememberMeManager,
-//                                                        Authenticator authenticator,
-//                                                        Authorizer authorizer ) {
-//
-//        List<Realm> realmList = new ArrayList<Realm>();
-//        for (Realm realm : realms) {
-//            realmList.add(realm);
-//        }
-//        securityManager.setRealms(realmList);
-//
-//        // Set the cache manager if available
-//        if(!cacheManager.isUnsatisfied()) {
-//            securityManager.setCacheManager(cacheManager.get());
-//        }
-//
-//        if(!rememberMeManager.isUnsatisfied()) {
-//            securityManager.setRememberMeManager(rememberMeManager.get());
-//        }
-//
-//        securityManager.setEventBus(eventBus);
-//        securityManager.setAuthenticator(authenticator);
-//        securityManager.setAuthorizer(authorizer);
-//        securityManager.setSessionManager(sessionManager);
-//        securityManager.setSubjectDAO(subjectDAO);
-//        securityManager.setSubjectFactory(subjectFactory);
-//        securityManager.setRememberMeManager(rememberMeManager.get());
-//
-//        return securityManager;
-//    }
+    @Default
+    @Produces
+    @Typed({SecurityManager.class})
+    @ApplicationScoped
+    protected SecurityManager securityManager(@New DefaultSecurityManager securityManager,
+                                                        Instance<Realm> realms,
+                                                        EventBus eventBus,
+                                                        SessionManager sessionManager,
+                                                        Instance<CacheManager> cacheManager,
+                                                        SubjectDAO subjectDAO,
+                                                        SubjectFactory subjectFactory,
+                                                        Instance<RememberMeManager> rememberMeManager,
+                                                        Authenticator authenticator,
+                                                        Authorizer authorizer ) {
+
+        List<Realm> realmList = new ArrayList<Realm>();
+        for (Realm realm : realms) {
+            realmList.add(realm);
+        }
+        securityManager.setRealms(realmList);
+
+        // Set the cache manager if available
+        if(!cacheManager.isUnsatisfied()) {
+            securityManager.setCacheManager(cacheManager.get());
+        }
+
+        if(!rememberMeManager.isUnsatisfied()) {
+            securityManager.setRememberMeManager(rememberMeManager.get());
+        }
+
+        securityManager.setEventBus(eventBus);
+        securityManager.setAuthenticator(authenticator);
+        securityManager.setAuthorizer(authorizer);
+        securityManager.setSessionManager(sessionManager);
+        securityManager.setSubjectDAO(subjectDAO);
+        securityManager.setSubjectFactory(subjectFactory);
+        securityManager.setRememberMeManager(rememberMeManager.get());
+
+        return securityManager;
+    }
 
     @PostConstruct
     public void init() {
@@ -173,19 +167,6 @@ public class ShiroCdiConfiguration {
     protected AuthenticationStrategy authenticationStrategy(@New AtLeastOneSuccessfulStrategy authenticationStrategy) {
         return authenticationStrategy;
     }
-
-//    @Produces
-//    @ApplicationScoped
-//    protected Authenticator authenticator(
-//    ) {
-//        return new ModularRealmAuthenticator();
-////        @New ModularRealmAuthenticator authenticator
-////    }) {
-////                                          AuthenticationStrategy authenticationStrategy) {
-////        authenticator.setAuthenticationStrategy(authenticationStrategy);
-////        return authenticator;
-//    }
-
 
     @Produces
     @ApplicationScoped

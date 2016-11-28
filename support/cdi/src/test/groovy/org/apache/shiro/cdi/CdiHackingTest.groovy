@@ -9,6 +9,7 @@ import org.apache.shiro.cache.CacheManager
 import org.apache.shiro.event.EventBus
 import org.apache.shiro.mgt.DefaultSecurityManager
 import org.apache.shiro.mgt.RememberMeManager
+import org.apache.shiro.mgt.SecurityManager
 import org.apache.shiro.mgt.SubjectDAO
 import org.apache.shiro.mgt.SubjectFactory
 import org.apache.shiro.realm.Realm
@@ -21,6 +22,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.inject.Default
 import javax.enterprise.inject.Instance
 import javax.enterprise.inject.Produces
+import javax.enterprise.inject.Typed
 import javax.inject.Inject
 
 import static org.junit.Assert.*
@@ -33,8 +35,8 @@ import static org.junit.Assert.*
 @ApplicationScoped
 public class CdiHackingTest {
 
-//    @Inject
-//    private SecurityManager securityManager;
+    @Inject
+    private SecurityManager securityManager;
 
 //    @Inject
 //    private ShiroCdiExtension extension;
