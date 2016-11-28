@@ -10,6 +10,7 @@ import org.apache.shiro.realm.text.TextConfigurationRealm
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.inject.Produces
 
+@ApplicationScoped
 class StubConfiguration {
 
     @Produces

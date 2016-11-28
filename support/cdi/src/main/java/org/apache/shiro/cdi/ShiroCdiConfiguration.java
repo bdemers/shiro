@@ -122,12 +122,6 @@ public class ShiroCdiConfiguration {
 
     @Produces
     @ApplicationScoped
-    protected RememberMeManager rememberMeManager() {
-        return null;
-    }
-
-    @Produces
-    @ApplicationScoped
     protected SubjectDAO subjectDAO(@New DefaultSubjectDAO subjectDAO, SessionStorageEvaluator sessionStorageEvaluator) {
         subjectDAO.setSessionStorageEvaluator(sessionStorageEvaluator);
         return subjectDAO;
@@ -173,19 +167,6 @@ public class ShiroCdiConfiguration {
 
         return authorizer;
     }
-
-//    @Produces
-//    @ApplicationScoped
-//    protected PermissionResolver permissionResolver() {
-//        return null;
-//    }
-
-    @Produces
-    @ApplicationScoped
-    protected RolePermissionResolver rolePermissionResolver() {
-        return null;
-    }
-
 
     @Produces
     @ApplicationScoped

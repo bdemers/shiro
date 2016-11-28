@@ -69,16 +69,24 @@ public class CdiHackingTest {
     @Inject
     private Authorizer authorizer;
 
-
-//    @Inject
-//    private Instance<PermissionResolver> permissionResolver;
+    @Inject
+    private Instance<PermissionResolver> permissionResolver;
 
     @Test
     public void doSomeStuff() {
 
         assertNotNull(eventBus)
-//        assertNotNull(permissionResolver.get())
         assertNotNull(authenticator)
+        assertNotNull(authorizer)
+        assertNotNull(subjectFactory)
+        assertNotNull(subjectDAO)
+        assertNotNull(sessionManager)
+
+        assertTrue(rememberMeManager.isUnsatisfied())
+        assertTrue(cacheManager.isUnsatisfied())
+
+        assertNotNull(permissionResolver.get())
+
 
 //        Assert.assertSame cdiEnvironment.securityManager, securityManager
 //        assertTrue(cdiEnvironment.securityManager instanceof DefaultSecurityManager)
