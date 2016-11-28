@@ -30,6 +30,7 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
@@ -43,18 +44,18 @@ public class ShiroCdiConfiguration {
 
     @Default
     @Produces
-    @Typed({SecurityManager.class})
+    @Typed({SecurityManager.class, DefaultSecurityManager.class})
     @ApplicationScoped
-    protected SecurityManager securityManager(@New DefaultSecurityManager securityManager,
-                                                        Instance<Realm> realms,
-                                                        EventBus eventBus,
-                                                        SessionManager sessionManager,
-                                                        Instance<CacheManager> cacheManager,
-                                                        SubjectDAO subjectDAO,
-                                                        SubjectFactory subjectFactory,
-                                                        Instance<RememberMeManager> rememberMeManager,
-                                                        Authenticator authenticator,
-                                                        Authorizer authorizer ) {
+    protected DefaultSecurityManager securityManager(@New DefaultSecurityManager securityManager,
+                                                     Instance<Realm> realms,
+                                                     EventBus eventBus,
+                                                     SessionManager sessionManager,
+                                                     Instance<CacheManager> cacheManager,
+                                                     SubjectDAO subjectDAO,
+                                                     SubjectFactory subjectFactory,
+                                                     Instance<RememberMeManager> rememberMeManager,
+                                                     Authenticator authenticator,
+                                                     Authorizer authorizer ) {
 
         List<Realm> realmList = new ArrayList<Realm>();
         for (Realm realm : realms) {
@@ -77,20 +78,13 @@ public class ShiroCdiConfiguration {
         securityManager.setSessionManager(sessionManager);
         securityManager.setSubjectDAO(subjectDAO);
         securityManager.setSubjectFactory(subjectFactory);
-        securityManager.setRememberMeManager(rememberMeManager.get());
 
         return securityManager;
     }
 
-    @PostConstruct
-    public void init() {
-        System.out.println("WTF");
-    }
-
-
     @Produces
     @ApplicationScoped
-    protected SessionManager sessionManager(@New DefaultSessionManager sessionManager,
+    protected DefaultSessionManager sessionManager(@New DefaultSessionManager sessionManager,
                                             SessionDAO sessionDAO,
                                             SessionFactory sessionFactory) {
 
@@ -110,44 +104,44 @@ public class ShiroCdiConfiguration {
     @Default
     @Produces
     @ApplicationScoped
-    public EventBus getEventBus(@New DefaultEventBus eventBus) {
+    public DefaultEventBus getEventBus(@New DefaultEventBus eventBus) {
         return eventBus;
     }
 
     @Produces
     @ApplicationScoped
-    protected SubjectDAO subjectDAO(@New DefaultSubjectDAO subjectDAO, SessionStorageEvaluator sessionStorageEvaluator) {
+    protected DefaultSubjectDAO subjectDAO(@New DefaultSubjectDAO subjectDAO, SessionStorageEvaluator sessionStorageEvaluator) {
         subjectDAO.setSessionStorageEvaluator(sessionStorageEvaluator);
         return subjectDAO;
     }
 
     @Produces
     @ApplicationScoped
-    protected SessionStorageEvaluator sessionStorageEvaluator(@New DefaultSessionStorageEvaluator sessionStorageEvaluator) {
+    protected DefaultSessionStorageEvaluator sessionStorageEvaluator(@New DefaultSessionStorageEvaluator sessionStorageEvaluator) {
         return sessionStorageEvaluator;
     }
 
     @Produces
     @ApplicationScoped
-    protected SubjectFactory subjectFactory(@New DefaultSubjectFactory subjectFactory) {
+    protected DefaultSubjectFactory subjectFactory(@New DefaultSubjectFactory subjectFactory) {
         return subjectFactory;
     }
 
     @Produces
     @ApplicationScoped
-    protected SessionFactory sessionFactory(@New SimpleSessionFactory sessionFactory) {
+    protected SimpleSessionFactory sessionFactory(@New SimpleSessionFactory sessionFactory) {
         return sessionFactory;
     }
 
     @Produces
     @ApplicationScoped
-    protected SessionDAO sessionDAO(@New MemorySessionDAO memorySessionDAO) {
+    protected MemorySessionDAO sessionDAO(@New MemorySessionDAO memorySessionDAO) {
         return memorySessionDAO;
     }
 
     @Produces
     @ApplicationScoped
-    protected Authorizer authorizer(@New ModularRealmAuthorizer authorizer,
+    protected ModularRealmAuthorizer authorizer(@New ModularRealmAuthorizer authorizer,
                                     Instance<PermissionResolver> permissionResolver,
                                     Instance<RolePermissionResolver> rolePermissionResolver) {
 
@@ -164,13 +158,13 @@ public class ShiroCdiConfiguration {
 
     @Produces
     @ApplicationScoped
-    protected AuthenticationStrategy authenticationStrategy(@New AtLeastOneSuccessfulStrategy authenticationStrategy) {
+    protected AtLeastOneSuccessfulStrategy authenticationStrategy(@New AtLeastOneSuccessfulStrategy authenticationStrategy) {
         return authenticationStrategy;
     }
 
     @Produces
     @ApplicationScoped
-    protected Authenticator authenticator(@New ModularRealmAuthenticator authenticator,
+    protected ModularRealmAuthenticator authenticator(@New ModularRealmAuthenticator authenticator,
                                           AuthenticationStrategy authenticationStrategy) {
         authenticator.setAuthenticationStrategy(authenticationStrategy);
         return authenticator;

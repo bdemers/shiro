@@ -58,7 +58,6 @@
             <scope>test</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.deltaspike.modules</groupId>
             <artifactId>deltaspike-test-control-module-api</artifactId>
@@ -86,13 +85,6 @@
             <version>2.4.1.Final</version>
             <scope>test</scope>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.jglue.cdi-unit</groupId>-->
-            <!--<artifactId>cdi-unit</artifactId>-->
-            <!--<version>3.1.2</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
 
     </dependencies>
 

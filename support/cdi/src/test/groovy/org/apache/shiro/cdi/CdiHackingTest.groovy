@@ -4,6 +4,7 @@ import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner
 import org.apache.shiro.authc.Authenticator
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator
 import org.apache.shiro.authz.Authorizer
+import org.apache.shiro.authz.ModularRealmAuthorizer
 import org.apache.shiro.authz.permission.PermissionResolver
 import org.apache.shiro.cache.CacheManager
 import org.apache.shiro.event.EventBus
@@ -21,9 +22,9 @@ import org.junit.runner.RunWith
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.inject.Default
 import javax.enterprise.inject.Instance
-import javax.enterprise.inject.Produces
-import javax.enterprise.inject.Typed
 import javax.inject.Inject
+
+import static org.hamcrest.Matchers.*
 
 import static org.junit.Assert.*
 
@@ -35,14 +36,15 @@ import static org.junit.Assert.*
 @ApplicationScoped
 public class CdiHackingTest {
 
+
     @Inject
     private SecurityManager securityManager;
 
 //    @Inject
 //    private ShiroCdiExtension extension;
 
-//    @Inject
-//    private CdiEnvironment cdiEnvironment;
+    @Inject
+    private CdiEnvironment cdiEnvironment;
 
     @Inject
     private EventBus eventBus;
@@ -74,6 +76,9 @@ public class CdiHackingTest {
     @Inject
     private Instance<PermissionResolver> permissionResolver;
 
+    @Inject
+    private PermissionResolver wtf;
+
     @Test
     public void doSomeStuff() {
 
@@ -89,22 +94,10 @@ public class CdiHackingTest {
 
         assertNotNull(permissionResolver.get())
 
-
-//        Assert.assertSame cdiEnvironment.securityManager, securityManager
-//        assertTrue(cdiEnvironment.securityManager instanceof DefaultSecurityManager)
-//        assertSame securityManager.authenticator, authenticator
-
-//        DefaultSecurityManager defaultSecurityManager = cdiEnvironment.getSecurityManager()
-//        ModularRealmAuthorizer authorizer = defaultSecurityManager.getAuthorizer()
-//        Assert.assertSame authorizer.getPermissionResolver(), permissionResolver
+        assertSame cdiEnvironment.securityManager, securityManager
+        assertThat securityManager, instanceOf(DefaultSecurityManager)
+        assertSame securityManager.authenticator, authenticator
+        assertSame securityManager.authorizer.getPermissionResolver(), permissionResolver.get()
 
     }
-
-//    @Produces
-//    private Realm createTestRealm() {
-//        return new TextConfigurationRealm()
-//    }
-
-
-
 }
