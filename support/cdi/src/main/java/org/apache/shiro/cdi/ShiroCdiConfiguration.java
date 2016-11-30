@@ -56,6 +56,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.New;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,14 +73,12 @@ public class ShiroCdiConfiguration {
     @Inject
     private Instance<Object> objectInstances;
 
-    @Default
+    @Standard
     @Produces
     @Typed({
         SecurityManager.class,
         DefaultSecurityManager.class,
-        Destroyable.class // We need to set all of the possible types here,
-                          // as this will conflict with Authorizer/Authenticator
-                          // TODO: I'm not sure this is the best approach
+        Destroyable.class
     })
     @ApplicationScoped
     protected DefaultSecurityManager securityManager(@New DefaultSecurityManager securityManager,
@@ -93,6 +92,36 @@ public class ShiroCdiConfiguration {
                                                      Authenticator authenticator,
                                                      Authorizer authorizer ) {
 
+        return configureSecurityManager(securityManager,
+                                        realms,
+                                        eventBus,
+                                        sessionManager,
+                                        cacheManager,
+                                        subjectDAO,
+                                        subjectFactory,
+                                        rememberMeManager,
+                                        authenticator,
+                                        authorizer);
+
+    }
+
+    @Produces
+    @ApplicationScoped
+    @Typed({ SecurityManager.class, DefaultSecurityManager.class })
+    protected DefaultSecurityManager securityManager(@Standard DefaultSecurityManager securityManager) {
+        return securityManager;
+    }
+
+    protected <T extends DefaultSecurityManager> T configureSecurityManager(T securityManager,
+                                                                            Instance<Realm> realms,
+                                                                            EventBus eventBus,
+                                                                            SessionManager sessionManager,
+                                                                            Instance<CacheManager> cacheManager,
+                                                                            SubjectDAO subjectDAO,
+                                                                            SubjectFactory subjectFactory,
+                                                                            Instance<RememberMeManager> rememberMeManager,
+                                                                            Authenticator authenticator,
+                                                                            Authorizer authorizer ) {
         List<Realm> realmList = new ArrayList<Realm>();
         for (Realm realm : realms) {
             realmList.add(realm);
@@ -118,6 +147,7 @@ public class ShiroCdiConfiguration {
         return securityManager;
     }
 
+    @Standard
     @Produces
     @ApplicationScoped
     protected DefaultSessionManager sessionManager(@New DefaultSessionManager sessionManager,
@@ -129,6 +159,13 @@ public class ShiroCdiConfiguration {
         sessionManager.setDeleteInvalidSessions(true); // TODO: add configuration for this.
         return sessionManager;
     }
+
+    @Produces
+    @ApplicationScoped
+    protected SessionManager sessionManager(Instance<SessionManager> sessionManagers) {
+        return sessionManagers.get();
+    }
+
 
 //    @Produces
 //    @ApplicationScoped
@@ -157,6 +194,7 @@ public class ShiroCdiConfiguration {
         return sessionStorageEvaluator;
     }
 
+    @Standard
     @Produces
     @ApplicationScoped
     protected DefaultSubjectFactory subjectFactory(@New DefaultSubjectFactory subjectFactory) {
@@ -165,9 +203,18 @@ public class ShiroCdiConfiguration {
 
     @Produces
     @ApplicationScoped
+    protected SubjectFactory subjectFactory(@Standard SubjectFactory subjectFactory) {
+        return subjectFactory;
+    }
+
+    @Default
+    @Produces
+    @ApplicationScoped
     protected SimpleSessionFactory sessionFactory(@New SimpleSessionFactory sessionFactory) {
         return sessionFactory;
     }
+
+
 
     @Produces
     @ApplicationScoped
@@ -208,6 +255,15 @@ public class ShiroCdiConfiguration {
 
     @PostConstruct
     void init() {
+
+
+
+
+
+
+
+
+
         for(Initializable initializable : initializables) {
             initializable.init();
         }

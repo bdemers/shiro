@@ -1,28 +1,10 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-package org.apache.shiro.cdi
+package org.apache.shiro.cdi.web
 
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner
 import org.apache.shiro.authc.Authenticator
 import org.apache.shiro.authz.Authorizer
-import org.apache.shiro.authz.permission.PermissionResolver
 import org.apache.shiro.cache.CacheManager
+import org.apache.shiro.cdi.CdiEnvironment
 import org.apache.shiro.event.EventBus
 import org.apache.shiro.mgt.DefaultSecurityManager
 import org.apache.shiro.mgt.RememberMeManager
@@ -30,26 +12,24 @@ import org.apache.shiro.mgt.SecurityManager
 import org.apache.shiro.mgt.SubjectDAO
 import org.apache.shiro.mgt.SubjectFactory
 import org.apache.shiro.realm.Realm
+import org.apache.shiro.session.mgt.NativeSessionManager
 import org.apache.shiro.session.mgt.SessionManager
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager
+import org.apache.shiro.web.mgt.DefaultWebSubjectFactory
+import org.apache.shiro.web.session.mgt.ServletContainerSessionManager
+import org.apache.shiro.web.session.mgt.WebSessionManager
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.Default
 import javax.enterprise.inject.Instance
 import javax.inject.Inject
 
-import static org.hamcrest.Matchers.*
-
+import static org.hamcrest.Matchers.instanceOf
 import static org.junit.Assert.*
 
-/**
- * Hacking around with CDI and Shiro.
- */
 @RunWith(CdiTestRunner.class)
-@Default
-@ApplicationScoped
-public class CdiHackingTest {
+public class MoreHackingTest {
+
 
     @Inject
     private SecurityManager securityManager;
@@ -84,12 +64,8 @@ public class CdiHackingTest {
     @Inject
     private Authorizer authorizer;
 
-    @Inject
-    private Instance<PermissionResolver> permissionResolver;
-
     @Test
-    public void doSomeStuff() {
-
+    public void doStuff() {
         assertNotNull(eventBus)
         assertNotNull(authenticator)
         assertNotNull(authorizer)
@@ -97,16 +73,19 @@ public class CdiHackingTest {
         assertNotNull(subjectDAO)
         assertNotNull(sessionManager)
 
-        assertTrue(rememberMeManager.isUnsatisfied())
+        assertFalse(rememberMeManager.isUnsatisfied())
         assertTrue(cacheManager.isUnsatisfied())
 
-        assertNotNull(permissionResolver.get())
-
         assertSame cdiEnvironment.securityManager, securityManager
-        assertThat securityManager, instanceOf(DefaultSecurityManager)
+        assertThat securityManager, instanceOf(DefaultWebSecurityManager)
         assertSame securityManager.authenticator, authenticator
-        assertSame securityManager.authorizer.getPermissionResolver(), permissionResolver.get()
 
+        assertEquals subjectFactory, ((DefaultSecurityManager)securityManager).getSubjectFactory()
+        assertThat subjectFactory, instanceOf(DefaultWebSubjectFactory)
 
+        assertEquals sessionManager, ((DefaultSecurityManager)securityManager).getSessionManager()
+
+        assertThat sessionManager, instanceOf(WebSessionManager)
     }
+
 }
