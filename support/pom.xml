@@ -44,7 +44,6 @@
         <module>servlet-plugin</module>
         <module>jaxrs</module>
         <module>cdi</module>
-        <module>cdi-web</module>
     </modules>
 
 </project>
