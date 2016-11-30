@@ -18,19 +18,21 @@
  */
 package org.apache.shiro.cdi;
 
-import org.apache.shiro.env.Environment;
-import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.event.Subscribe;
+
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
-public class CdiEnvironment implements Environment {
+public class EventListenerStub {
 
-    @Inject
-    private SecurityManager securityManager;
+    private Object lastEvent;
 
-    @Override
-    public SecurityManager getSecurityManager() {
-        return securityManager;
+    @Subscribe
+    public void anyEvent(Object event) {
+        this.lastEvent = event;
+    }
+
+    public Object getLastEvent() {
+        return lastEvent;
     }
 }

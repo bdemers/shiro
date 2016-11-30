@@ -16,21 +16,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.shiro.cdi;
+package org.apache.shiro.cdi
 
-import org.apache.shiro.env.Environment;
-import org.apache.shiro.mgt.SecurityManager;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner
+import org.apache.shiro.event.EventBus
+import org.junit.Test
+import org.junit.runner.RunWith
 
-@ApplicationScoped
-public class CdiEnvironment implements Environment {
+import javax.inject.Inject
+
+import static org.junit.Assert.*
+
+@RunWith(CdiTestRunner.class)
+public class EventBusSubscribeTest {
 
     @Inject
-    private SecurityManager securityManager;
+    EventBus eventBus
 
-    @Override
-    public SecurityManager getSecurityManager() {
-        return securityManager;
+    @Inject
+    EventListenerStub listenerStub
+
+    @Inject
+    EventBusAwareStub eventBusAwareStub
+
+    @Test
+    void fireEventTest() {
+
+        // fire an event then make sure the wired component received it.
+        eventBus.publish("EventString")
+        assertEquals "EventString", listenerStub.lastEvent
     }
+
+    @Test
+    void eventBusAwareTest() {
+        assertSame eventBus, eventBusAwareStub.eventBus
+    }
+
 }

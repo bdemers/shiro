@@ -18,19 +18,24 @@
  */
 package org.apache.shiro.cdi;
 
-import org.apache.shiro.env.Environment;
-import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.event.EventBus;
+import org.apache.shiro.event.EventBusAware;
+
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
-public class CdiEnvironment implements Environment {
+public class EventBusAwareStub implements EventBusAware {
 
-    @Inject
-    private SecurityManager securityManager;
+    private EventBus eventBus;
 
     @Override
-    public SecurityManager getSecurityManager() {
-        return securityManager;
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
+
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+
 }
