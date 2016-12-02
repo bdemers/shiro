@@ -18,12 +18,12 @@
  */
 package org.apache.shiro.cdi;
 
-import org.apache.shiro.event.EventBus;
-import org.apache.shiro.event.EventBusAware;
+import org.apache.shiro.aop.MethodInterceptor;
+import org.apache.shiro.aop.MethodInvocation;
+import org.apache.shiro.authz.aop.AnnotationsAuthorizingMethodInterceptor;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
-import javax.inject.Inject;
+import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InterceptorBinding;
 import javax.interceptor.InvocationContext;
@@ -31,40 +31,45 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 
-@EventListenerRegistrationInterceptor.ProcessShiroEventBusConsumer
 @Interceptor
+@ShiroAnnotationInterceptor.ProcessShiroAnnotations
 @Priority(Interceptor.Priority.LIBRARY_BEFORE + 10)
-class EventListenerRegistrationInterceptor {
+final class ShiroAnnotationInterceptor extends AnnotationsAuthorizingMethodInterceptor implements MethodInterceptor {
 
-    private final EventBus eventBus;
-
-    @Inject
-    public EventListenerRegistrationInterceptor(EventBus eventBus) {
-        this.eventBus = eventBus;
-    }
-
-    @PostConstruct
+    @AroundInvoke
     public Object invoke(final InvocationContext invocationContext) throws Throwable {
 
-        Object target = invocationContext.getTarget();
+        return invoke(new MethodInvocation() {
+            @Override
+            public Object proceed() throws Throwable {
+                return invocationContext.proceed();
+            }
 
-        // If an object is EventBusAware, do NOT register events directly, just call setEventBus()
-        if(target instanceof EventBusAware) {
-            ((EventBusAware) target).setEventBus(eventBus);
-        }
-        else {
-            eventBus.register(target);
-        }
+            @Override
+            public Method getMethod() {
+                return invocationContext.getMethod();
+            }
 
-        return invocationContext.proceed();
+            @Override
+            public Object[] getArguments() {
+                return invocationContext.getParameters();
+            }
+
+            @Override
+            public Object getThis() {
+                return invocationContext.getTarget();
+            }
+        });
     }
 
     /**
      * A marker annotation, used to assign Shiro annotations problematically.
      */
     @InterceptorBinding
-    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface ProcessShiroEventBusConsumer {}
+    @interface ProcessShiroAnnotations {}
+
 }
