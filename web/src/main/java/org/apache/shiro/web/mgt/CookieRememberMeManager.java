@@ -148,13 +148,15 @@ public class CookieRememberMeManager extends AbstractRememberMeManager {
         HttpServletRequest request = WebUtils.getHttpRequest(subject);
         HttpServletResponse response = WebUtils.getHttpResponse(subject);
 
-        //base 64 encode it and store as a cookie:
-        String base64 = Base64.encodeToString(serialized);
-
         Cookie template = getCookie(); //the class attribute is really a template for the outgoing cookies
         Cookie cookie = new SimpleCookie(template);
-        cookie.setValue(base64);
+        cookie.setValue(encodeCookieValue(serialized));
         cookie.saveTo(request, response);
+    }
+
+    protected String encodeCookieValue(byte[] serialized) {
+        //base 64 encode it and store as a cookie:
+        return Base64.encodeToString(serialized);
     }
 
     private boolean isIdentityRemoved(WebSubjectContext subjectContext) {
@@ -202,7 +204,7 @@ public class CookieRememberMeManager extends AbstractRememberMeManager {
         HttpServletRequest request = WebUtils.getHttpRequest(wsc);
         HttpServletResponse response = WebUtils.getHttpResponse(wsc);
 
-        String base64 = getCookie().readValue(request, response);
+        String base64 = decodeCookieValue(getCookie().readValue(request, response));
         // Browsers do not always remove cookies immediately (SHIRO-183)
         // ignore cookies that are scheduled for removal
         if (Cookie.DELETED_COOKIE_VALUE.equals(base64)) return null;
@@ -221,6 +223,10 @@ public class CookieRememberMeManager extends AbstractRememberMeManager {
             //no cookie set - new site visitor?
             return null;
         }
+    }
+
+    protected String decodeCookieValue(String cookieValue) {
+        return cookieValue;
     }
 
     /**
