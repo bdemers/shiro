@@ -29,6 +29,7 @@ import org.apache.shiro.guice.ShiroModule;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.util.StringUtils;
+import org.apache.shiro.web.csrf.CsrfFilter;
 import org.apache.shiro.web.env.WebEnvironment;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
@@ -84,6 +85,8 @@ public abstract class ShiroWebModule extends ShiroModule {
     public static final Key<SslFilter> SSL = Key.get(SslFilter.class);
     @SuppressWarnings({"UnusedDeclaration"})
     public static final Key<UserFilter> USER = Key.get(UserFilter.class);
+    @SuppressWarnings({"UnusedDeclaration"})
+    public static final Key<CsrfFilter> CSRF = Key.get(CsrfFilter.class);
 
 
     static final String NAME = "SHIRO";

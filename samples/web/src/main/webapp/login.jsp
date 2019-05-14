@@ -87,6 +87,10 @@
     <br/><br/>
 </shiro:guest>
 
+<c:if test="${shiroLoginFailure != null}">
+<div>Error logging in: ${shiroLoginFailure}</div>
+</c:if>
+
 <form name="loginform" action="" method="post">
     <table align="left" border="0" cellspacing="0" cellpadding="3">
         <tr>
@@ -104,6 +108,7 @@
             <td colspan="2" align="right"><input type="submit" name="submit" value="Login"></td>
         </tr>
     </table>
+    <input type="hidden" name="_csrf" value="${_csrf.token}">
 </form>
 
 </body>
